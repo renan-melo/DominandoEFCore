@@ -19,17 +19,26 @@ namespace DominandoEFCore
             GerenciarEstadoDaConexao(false);
         }
 
+        #region "Tipos de comandos em script SQL"
         static void ExecuteSQL()
-        { 
+        {
             using var db = new DominandoEFCore.Data.ApplicationContext();
 
             // Primeira Opção
-            using(var cmd = db.Database.GetDbConnection().CreateCommand()) {
+            using (var cmd = db.Database.GetDbConnection().CreateCommand())
+            {
                 cmd.CommandText = "SELECT 1";
                 cmd.ExecuteNonQuery();
             }
 
+            //Segunda Opção
+            var descricao = "TESTE";
+            db.Database.ExecuteSqlRaw("update departamentos set descricao={0} where id=1", descricao);
+
+            //Terceira Opção
+            db.Database.ExecuteSqlInterpolated($"update departamentos set descricao={descricao} where id=1");
         }
+        #endregion
 
         static int _count;
         static void GerenciarEstadoDaConexao(bool gerenciarEstadoDaConexao)
