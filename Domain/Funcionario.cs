@@ -7,8 +7,8 @@ namespace DominandoEFCore.Domain
         public string Nome { get; set; }
         public string CPF { get; set; }
         public int DepartamentoId { get; set; }
-        public int RG { get; set; }
+        public string RG { get; set; }
 
-        public Departamento departamento { get; set; }
+        public virtual Departamento departamento { get; set; }
     }
 }

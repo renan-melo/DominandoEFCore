@@ -67,3 +67,5 @@ D:\DominandoEFCore\obj\Debug\net5.0\DominandoEFCore.pdb
 D:\DominandoEFCore\obj\Debug\net5.0\DominandoEFCore.genruntimeconfig.cache
 D:\DominandoEFCore\bin\Debug\net5.0\Humanizer.dll
 D:\DominandoEFCore\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Design.dll
+D:\DominandoEFCore\bin\Debug\net5.0\Castle.Core.dll
+D:\DominandoEFCore\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Proxies.dll

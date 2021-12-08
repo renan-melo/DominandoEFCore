@@ -10,7 +10,10 @@ namespace DominandoEFCore
     {
         static void Main(string[] args)
         {
-            ScriptGeralDoBancoDeDados();
+            CarregamentoLento();
+            // CarregamentoExplicito();
+            // CarregamentoAdiantado();
+            // ScriptGeralDoBancoDeDados();
             // MigraçõesJaAplicadas();
             // TodasMigracoes();
             // AplicarMigracaoEmTempodeExecucao();
@@ -24,9 +27,103 @@ namespace DominandoEFCore
             // GerenciarEstadoDaConexao(false);
         }
 
-        #region ""
+        #region "Consultando dados usando carregamento explícito (Explicity)"
+        static void CarregamentoLento()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            SetupTiposCarregamentos(db);
+
+            var departamentos = db
+                .Departamentos
+                .ToList();
+
+            foreach (var departamento in departamentos)
+            {
+                Console.WriteLine("-------------------------------------------");
+                Console.WriteLine($"Departamento: {departamento.Descricao}");
+
+                if (departamento.Funcionarios?.Any() ?? false)
+                {
+                    foreach (var funcionario in departamento.Funcionarios)
+                    {
+                        Console.WriteLine($"/tFuncionario: {funcionario.Nome}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"/tNenhum funcionario encontrado!");
+                }
+
+            }
+        }
         #endregion
 
+        #region "Consultando dados usando carregamento explícito (Explicity)"
+        static void CarregamentoExplicito()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            SetupTiposCarregamentos(db);
+
+            var departamentos = db
+                .Departamentos
+                .ToList();
+            Console.WriteLine(departamentos);
+
+            foreach (var departamento in departamentos)
+            {
+                if(departamento.Id == 2)
+                {
+                    db.Entry(departamento).Collection(p=>p.Funcionarios).Load();
+                }
+
+                Console.WriteLine("-------------------------------------------");
+                Console.WriteLine($"Departamento: {departamento.Descricao}");
+
+                if (departamento.Funcionarios?.Any() ?? false)
+                {
+                    foreach (var funcionario in departamento.Funcionarios)
+                    {
+                        Console.WriteLine($"/tFuncionario: {funcionario.Nome}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"/tNenhum funcionario encontrado!");
+                }
+
+            }
+        }
+        #endregion
+
+        #region "Consultando dados usando carregamento adiantado (Eager)"
+        static void CarregamentoAdiantado()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            SetupTiposCarregamentos(db);
+
+            var departamentos = db.Departamentos.Include(p => p.Funcionarios);
+
+            foreach (var departamento in departamentos)
+            {
+                Console.WriteLine("-------------------------------------------");
+                Console.WriteLine($"Departamento: {departamento.Descricao}");
+
+                if (departamento.Funcionarios?.Any() ?? false)
+                {
+                    foreach (var funcionario in departamento.Funcionarios)
+                    {
+                        Console.WriteLine($"/tFuncionario: {funcionario.Nome}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"/tNenhum funcionario encontrado!");
+                }
+
+            }
+        }
+        
+        #endregion
 
         #region "Gerando o script de criação SQL do modelo de dados"
 
@@ -47,7 +144,7 @@ namespace DominandoEFCore
             var migracoes = db.Database.GetAppliedMigrations();
             Console.WriteLine($"Total: {migracoes.Count()}");
 
-            foreach(var migracao in migracoes)
+            foreach (var migracao in migracoes)
             {
                 Console.WriteLine($"Migração: {migracao}");
             }
@@ -62,7 +159,7 @@ namespace DominandoEFCore
             var migracoes = db.Database.GetMigrations();
             Console.WriteLine($"Total: {migracoes.Count()}");
 
-            foreach(var migracao in migracoes)
+            foreach (var migracao in migracoes)
             {
                 Console.WriteLine($"Migração: {migracao}");
             }
@@ -91,6 +188,46 @@ namespace DominandoEFCore
         #endregion
 
         #region "Tipos de comandos em script SQL"
+
+        static void SetupTiposCarregamentos(DominandoEFCore.Data.ApplicationContext db)
+        {
+            if (!db.Departamentos.Any())
+            {
+                db.Departamentos.AddRange(
+                    new DominandoEFCore.Domain.Departamento
+                    {
+                        Descricao = "Departamento 01",
+                        Funcionarios = new System.Collections.Generic.List<DominandoEFCore.Domain.Funcionario>
+                        {
+                            new DominandoEFCore.Domain.Funcionario
+                            {
+                                Nome = "Rafael Almeida",
+                                CPF = "99999999911",
+                                RG = "2100062"
+                            }
+                        }
+                    },
+                     new DominandoEFCore.Domain.Departamento
+                     {
+                         Descricao = "Departamento 02",
+                         Funcionarios = new System.Collections.Generic.List<DominandoEFCore.Domain.Funcionario>
+                        {
+                            new DominandoEFCore.Domain.Funcionario
+                            {
+                                Nome = "Rafael Almeida",
+                                CPF = "99999999911",
+                                RG = "3100062"
+                            },
+                            new DominandoEFCore.Domain.Funcionario
+                            {
+                                Nome = "Eduardo Pires",
+                                CPF = "7777777777711",
+                                RG = "1100062"
+                            }
+                        }
+                     });
+            }
+        }
         static void ExecuteSQL()
         {
             using var db = new DominandoEFCore.Data.ApplicationContext();
