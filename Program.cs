@@ -10,14 +10,85 @@ namespace DominandoEFCore
     {
         static void Main(string[] args)
         {
+            ScriptGeralDoBancoDeDados();
+            // MigraçõesJaAplicadas();
+            // TodasMigracoes();
+            // AplicarMigracaoEmTempodeExecucao();
+            // MigracoesPendentes();
             // EnsureCreateAndDeleted();
             // GapDoEnsureCreated
             // HealthCheckBancoDeDados();
             //warmup
-            new DominandoEFCore.Data.ApplicationContext().Departamentos.AsNoTracking().Any();
-            GerenciarEstadoDaConexao(true);
-            GerenciarEstadoDaConexao(false);
+            // new DominandoEFCore.Data.ApplicationContext().Departamentos.AsNoTracking().Any();
+            // GerenciarEstadoDaConexao(true);
+            // GerenciarEstadoDaConexao(false);
         }
+
+        #region ""
+        #endregion
+
+
+        #region "Gerando o script de criação SQL do modelo de dados"
+
+        static void ScriptGeralDoBancoDeDados()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            var script = db.Database.GenerateCreateScript();
+            Console.WriteLine(script);
+        }
+        #endregion
+
+        #region "Recuperando migrações aplicadas em sua aplicação(Leitura)"
+        //dotnet ef migrations add rg --context ApplicationContext (Comando para acrescentar mais uma migration)
+        //dotnet ef migrations list --context ApplicationContext
+        static void MigraçõesJaAplicadas()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            var migracoes = db.Database.GetAppliedMigrations();
+            Console.WriteLine($"Total: {migracoes.Count()}");
+
+            foreach(var migracao in migracoes)
+            {
+                Console.WriteLine($"Migração: {migracao}");
+            }
+        }
+        #endregion
+
+        #region "Recuperando todas as migrações existentes em sua aplicação(Leitura)" 
+        //dotnet ef migrations add rg --context ApplicationContext (Comando para acrescentar mais uma migration)
+        static void TodasMigracoes()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            var migracoes = db.Database.GetMigrations();
+            Console.WriteLine($"Total: {migracoes.Count()}");
+
+            foreach(var migracao in migracoes)
+            {
+                Console.WriteLine($"Migração: {migracao}");
+            }
+        }
+        #endregion
+
+        #region "Forçando uma migração"
+        static void AplicarMigracaoEmTempodeExecucao()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            db.Database.Migrate();
+        }
+        #endregion
+
+        #region "Detectando migrações pendentes"
+        static void MigracoesPendentes()
+        {
+            using var db = new DominandoEFCore.Data.ApplicationContext();
+            var migracoesPendentes = db.Database.GetPendingMigrations();
+            Console.WriteLine($"Total: {migracoesPendentes.Count()}");
+            foreach (var migracao in migracoesPendentes)
+            {
+                Console.WriteLine($"Migração: {migracao}");
+            }
+        }
+        #endregion
 
         #region "Tipos de comandos em script SQL"
         static void ExecuteSQL()
