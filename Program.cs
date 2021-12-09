@@ -10,7 +10,7 @@ namespace DominandoEFCore
     {
         static void Main(string[] args)
         {
-            CarregamentoLento();
+            // CarregamentoLento();
             // CarregamentoExplicito();
             // CarregamentoAdiantado();
             // ScriptGeralDoBancoDeDados();
